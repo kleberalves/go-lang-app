@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,9 +41,13 @@ func postAlbums(c *gin.Context) {
 }
 
 func main() {
+	dbStr := os.ExpandEnv("host=$POSTGRES_HOSTNAME user=$POSTGRES_USER password=$POSTGRES_PASSWORD dbname=$POSTGRES_DB port=$POSTGRES_PORT sslmode=disable TimeZone=America/Sao_Paulo")
+	fmt.Println((dbStr))
+
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
 
 	router.Run("localhost:8080")
+
 }
