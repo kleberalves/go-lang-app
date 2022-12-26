@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	_dataSource "github.com/kleberalves/problemCompanyApp/backend/datasources"
+
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 
 	_productController "github.com/kleberalves/problemCompanyApp/backend/product/controller"
@@ -16,8 +18,7 @@ import (
 func main() {
 	router := gin.Default()
 
-	db := schema.Connect()
-
+	db := _dataSource.NewPostGresDataSource().Connect()
 	schema.AutoMigrations(db)
 
 	userRepo := _useRepo.NewUserRepository(db)
