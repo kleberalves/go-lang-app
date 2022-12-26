@@ -13,6 +13,10 @@ import (
 	_userController "github.com/kleberalves/problemCompanyApp/backend/user/controller"
 	_useRepo "github.com/kleberalves/problemCompanyApp/backend/user/repository"
 	_useService "github.com/kleberalves/problemCompanyApp/backend/user/service"
+
+	_purchaseController "github.com/kleberalves/problemCompanyApp/backend/purchase/controller"
+	_purchaseRepo "github.com/kleberalves/problemCompanyApp/backend/purchase/repository"
+	_purchaseService "github.com/kleberalves/problemCompanyApp/backend/purchase/service"
 )
 
 func main() {
@@ -28,6 +32,10 @@ func main() {
 	productRepo := _productRepo.NewProductRepository(db)
 	productService := _productService.NewProductService(productRepo)
 	_productController.NewProductController(router, productService)
+
+	purchaseRepo := _purchaseRepo.NewPurchaseRepository(db)
+	purchaseService := _purchaseService.NewPurchaseService(purchaseRepo)
+	_purchaseController.NewPurchaseController(router, purchaseService)
 
 	router.Run("localhost:8080")
 

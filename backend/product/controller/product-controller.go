@@ -29,7 +29,7 @@ func (ctrl *productController) FindAll(c *gin.Context) {
 		panic("Failed to retrieve all products: " + err.Error())
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": products})
+	c.JSON(http.StatusOK, products)
 }
 
 func (ctrl *productController) Create(c *gin.Context) {
@@ -46,5 +46,5 @@ func (ctrl *productController) Create(c *gin.Context) {
 		panic("Failed to create Product: " + err.Error())
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": product})
+	c.JSON(http.StatusOK, product)
 }

@@ -9,15 +9,15 @@ import (
 type Purchase struct {
 	gorm.Model
 
-	CodCustomer int  `json:"codCustomer"`
-	Customer    User `gorm:"foreignKey:CodCustomer"`
+	CodCustomer int
+	Customer    User `gorm:"foreignKey:CodCustomer;not null"`
 
-	CodSalesman int  `json:"codSalesman"`
-	Salesman    User `gorm:"foreignKey:CodSalesman"`
+	CodSalesman int
+	Salesman    User `gorm:"foreignKey:CodSalesman;not null"`
 
-	CodProduct int     `json:"codProduct"`
-	Product    Product `gorm:"foreignKey:CodProduct"`
+	CodProduct int
+	Product    Product `gorm:"foreignKey:CodProduct;not null" `
 
-	Price       float64   `json:"price"`
-	PurchasedAt time.Time `json:"date"`
+	Price       float64   `gorm:"not null"`
+	PurchasedAt time.Time `gorm:"not null"`
 }

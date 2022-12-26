@@ -15,11 +15,11 @@ func NewUserRepository(Conn *gorm.DB) user.Repository {
 	return &userRepository{Conn}
 }
 
-func (repo *userRepository) AssociateProfile(userId int, typ enums.TypeUser) schema.Profile {
+func (repo *userRepository) AddProfile(userId int, typ enums.TypeUser) schema.Profile {
 
 	profile := schema.Profile{
 		UserID: userId,
-		Type:   typ,
+		Type:   typ.EnumIndex(),
 	}
 
 	err := repo.Conn.Create(&profile).Error
@@ -31,10 +31,10 @@ func (repo *userRepository) AssociateProfile(userId int, typ enums.TypeUser) sch
 	return profile
 
 }
-func (repo *userRepository) RemoveProfile(userId int, typ enums.TypeUser) {
+func (repo *userRepository) DeleteProfile(userId int, typ enums.TypeUser) {
 	profileWhere := schema.Profile{
 		UserID: userId,
-		Type:   typ,
+		Type:   typ.EnumIndex(),
 	}
 
 	//Unscoped() deletes permanently
@@ -49,10 +49,12 @@ func (repo *userRepository) RemoveProfile(userId int, typ enums.TypeUser) {
 func (repo *userRepository) FindAll() (res []schema.UserRead, err error) {
 
 	var users []schema.UserRead
-	errExec := repo.Conn.Model(&schema.User{}).Preload("Profiles").Find(&users).Error
+	errExec := repo.Conn.Model(&schema.User{}).
+		Preload("Profiles").
+		Find(&users).Error
 
 	if errExec != nil {
-		panic("Failed to retrieve all Users: " + err.Error())
+		panic("Failed to retrieve all Users: " + errExec.Error())
 	}
 
 	return users, errExec
@@ -61,6 +63,31 @@ func (repo *userRepository) FindAll() (res []schema.UserRead, err error) {
 func (repo *userRepository) Create(input schema.User) (schema.User, error) {
 
 	err := repo.Conn.Create(&input).Error
-
 	return input, err
+
+}
+
+func (repo *userRepository) Get(id int) (schema.UserRead, error) {
+
+	var user schema.UserRead
+	err := repo.Conn.Model(&schema.User{}).
+		Preload("Profiles").
+		First(&user, id).Error
+	return user, err
+
+}
+
+func (repo *userRepository) Update(user schema.User) error {
+
+	err := repo.Conn.Model(&user).Updates(&user).Error
+	return err
+
+}
+
+func (repo *userRepository) Delete(ids []int) error {
+
+	//Soft deletes
+	err := repo.Conn.Delete(&schema.User{}, ids).Error
+	return err
+
 }

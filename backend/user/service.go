@@ -7,6 +7,10 @@ import (
 type Service interface {
 	FindAll() (res []schema.UserRead, err error)
 	Create(user schema.User) (schema.User, error)
-	AssociateProfile(userId int, typo int) schema.Profile
-	RemoveProfile(userId int, typo int)
+	Get(id int) (schema.UserRead, error)
+	Update(user schema.User) error
+	Delete(id []int) error
+
+	AddProfile(userId int, typo int) schema.Profile
+	DeleteProfile(userId int, typo int)
 }

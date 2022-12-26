@@ -1,13 +1,17 @@
 package schema
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
+
+// type tableInfo struct {
+// 	table_name  string
+// 	column_name string
+// 	data_type   string
+// }
 
 func AutoMigrations(db *gorm.DB) {
 
 	db.AutoMigrate(&User{}, &Product{}, &Purchase{}, &Profile{})
-
-	if db.Migrator().HasConstraint(&Profile{}, "idx_profiles_user_id") {
-		db.Migrator().DropConstraint(&Profile{}, "idx_profiles_user_id")
-	}
 
 }

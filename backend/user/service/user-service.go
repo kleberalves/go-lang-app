@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/kleberalves/problemCompanyApp/backend/enums"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 	"github.com/kleberalves/problemCompanyApp/backend/services"
@@ -17,12 +19,12 @@ func NewUserService(repo user.Repository) user.Service {
 	}
 }
 
-func (srv *userService) AssociateProfile(userId int, typo int) schema.Profile {
-	return srv.userRepo.AssociateProfile(userId, enums.TypeUser(typo))
+func (srv *userService) AddProfile(userId int, typo int) schema.Profile {
+	return srv.userRepo.AddProfile(userId, enums.TypeUser(typo))
 
 }
-func (srv *userService) RemoveProfile(userId int, typo int) {
-	srv.userRepo.RemoveProfile(userId, enums.TypeUser(typo))
+func (srv *userService) DeleteProfile(userId int, typo int) {
+	srv.userRepo.DeleteProfile(userId, enums.TypeUser(typo))
 }
 
 func (srv *userService) FindAll() (res []schema.UserRead, err error) {
@@ -41,4 +43,27 @@ func (srv *userService) Create(input schema.User) (schema.User, error) {
 		Profiles:  input.Profiles}
 
 	return srv.userRepo.Create(user)
+}
+
+func (srv *userService) Get(id int) (schema.UserRead, error) {
+	return srv.userRepo.Get(id)
+}
+
+func (srv *userService) Update(input schema.User) error {
+
+	if input.ID <= 0 {
+		return errors.New("ID not defined")
+	}
+
+	if input.Password != "" {
+		//TODO: check password rules
+		hash, _ := services.HashPassword(input.Password)
+		input.Password = hash
+	}
+
+	return srv.userRepo.Update(input)
+}
+
+func (srv *userService) Delete(ids []int) error {
+	return srv.userRepo.Delete(ids)
 }

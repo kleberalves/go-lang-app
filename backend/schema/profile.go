@@ -1,12 +1,9 @@
 package schema
 
-import (
-	"github.com/kleberalves/problemCompanyApp/backend/enums"
-	"gorm.io/gorm"
-)
+import "time"
 
 type Profile struct {
-	gorm.Model
-	Type   enums.TypeUser `json:"type" gorm:"primaryKey"`
-	UserID int            `gorm:"primaryKey"`
+	Type      int `gorm:"primaryKey;autoIncrement:false"`
+	UserID    int `gorm:"primaryKey;autoIncrement:false"`
+	CreatedAt time.Time
 }

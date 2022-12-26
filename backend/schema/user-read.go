@@ -4,12 +4,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// Hack to hide fields (ex Password)
-// https://stackoverflow.com/questions/44003152/hide-fields-in-golang-gorm
+// Hack to hide fields like password (sensitive) instead show empty
 type UserRead struct {
 	gorm.Model
-	FirstName string    `json:"firstName"`
-	LastName  string    `json:"lastName"`
-	Email     string    `json:"email" gorm:"unique" `
-	Profiles  []Profile `json:"profiles" gorm:"foreignkey:UserID"`
+	FirstName string
+	LastName  string
+	Email     string    `gorm:"unique" `
+	Profiles  []Profile `gorm:"foreignkey:UserID"`
 }
