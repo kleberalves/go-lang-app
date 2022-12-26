@@ -3,20 +3,30 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
-	"github.com/kleberalves/problemCompanyApp/backend/user/controller"
-	"github.com/kleberalves/problemCompanyApp/backend/user/repository"
-	"github.com/kleberalves/problemCompanyApp/backend/user/service"
+
+	_productController "github.com/kleberalves/problemCompanyApp/backend/product/controller"
+	_productRepo "github.com/kleberalves/problemCompanyApp/backend/product/repository"
+	_productService "github.com/kleberalves/problemCompanyApp/backend/product/service"
+
+	_userController "github.com/kleberalves/problemCompanyApp/backend/user/controller"
+	_useRepo "github.com/kleberalves/problemCompanyApp/backend/user/repository"
+	_useService "github.com/kleberalves/problemCompanyApp/backend/user/service"
 )
 
 func main() {
 	router := gin.Default()
 
 	db := schema.Connect()
-	schema.AutoMigrations()
 
-	userRepo := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepo)
-	controller.NewUserController(router, userService)
+	schema.AutoMigrations(db)
+
+	userRepo := _useRepo.NewUserRepository(db)
+	userService := _useService.NewUserService(userRepo)
+	_userController.NewUserController(router, userService)
+
+	productRepo := _productRepo.NewProductRepository(db)
+	productService := _productService.NewProductService(productRepo)
+	_productController.NewProductController(router, productService)
 
 	router.Run("localhost:8080")
 

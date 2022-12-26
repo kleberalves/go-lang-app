@@ -21,8 +21,6 @@ func NewUserController(router *gin.Engine, service user.Service) {
 	router.POST("/users", ctrl.Create)
 	router.POST("/users/:id/profiles/:typoid", ctrl.AssociateProfile)
 	router.DELETE("/users/:id/profiles/:typoid", ctrl.RemoveProfile)
-	// router.GET("/articles/:id", handler.GetByID)
-	// router.DELETE("/articles/:id", handler.Delete)
 }
 
 func (ctrl *userController) AssociateProfile(c *gin.Context) {

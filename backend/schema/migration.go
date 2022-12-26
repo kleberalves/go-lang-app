@@ -1,11 +1,13 @@
 package schema
 
-func AutoMigrations() {
+import "gorm.io/gorm"
 
-	db := Connect()
+func AutoMigrations(db *gorm.DB) {
 
-	err := db.AutoMigrate(&User{}, &Product{}, &Purchase{}, &Profile{})
-	if err != nil {
-		return
+	db.AutoMigrate(&User{}, &Product{}, &Purchase{}, &Profile{})
+
+	if db.Migrator().HasConstraint(&Profile{}, "idx_profiles_user_id") {
+		db.Migrator().DropConstraint(&Profile{}, "idx_profiles_user_id")
 	}
+
 }

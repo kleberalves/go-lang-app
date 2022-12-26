@@ -7,6 +7,6 @@ import (
 
 type Profile struct {
 	gorm.Model
-	Type   enums.TypeUser `json:"type" gorm:"unique"`
-	UserID int            `gorm:"unique"`
+	Type   enums.TypeUser `json:"type" gorm:"primaryKey"`
+	UserID int            `gorm:"primaryKey"`
 }
