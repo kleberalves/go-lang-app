@@ -1,6 +1,6 @@
 package enums
 
-type TypeUser int64
+type TypeUser int
 
 const (
 	Salesman TypeUser = iota + 1
