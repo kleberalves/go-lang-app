@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/kleberalves/problemCompanyApp/backend/enums"
 	"github.com/kleberalves/problemCompanyApp/backend/profile"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
@@ -17,7 +19,14 @@ func NewProfileService(repo profile.Repository) profile.Service {
 }
 
 func (srv *service) AddProfile(profileId int, typo int) (schema.Profile, error) {
-	return srv.repo.AddProfile(profileId, enums.TypeUser(typo))
+
+	e := enums.TypeUser(typo)
+
+	if e.String() == "" {
+		return schema.Profile{}, errors.New("invalid-profile")
+	}
+
+	return srv.repo.AddProfile(profileId, e)
 
 }
 func (srv *service) RemoveProfiles(userIds []int, typo int) error {

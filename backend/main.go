@@ -40,7 +40,7 @@ func main() {
 	router := gin.Default()
 
 	db := _dataSource.NewPostGresDataSource().Connect()
-	schema.AutoMigrations(db)
+	schema.Setup(db)
 
 	userRepo := _useRepo.NewUserRepository(db)
 	userService := _useService.NewUserService(userRepo)
