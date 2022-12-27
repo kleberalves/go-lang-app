@@ -57,5 +57,12 @@ func (repo *repository) Delete(ids []int) error {
 	//Soft deletes
 	err := repo.Conn.Delete(&schema.User{}, ids).Error
 	return err
+}
 
+func (repo *repository) GetByEmail(email string) (schema.User, error) {
+	var user schema.User
+	err := repo.Conn.Model(&schema.User{}).
+		Where("email = ?", email).
+		First(&user).Error
+	return user, err
 }

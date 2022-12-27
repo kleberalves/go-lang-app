@@ -56,6 +56,10 @@ func Response(p RParams) {
 			case "record not found":
 				//Despite being a database error, its not Postgres error it also has no code
 				p.Context.JSON(http.StatusNotFound, ResponseError{Message: strError})
+			case "invalid-password":
+				p.Context.JSON(http.StatusNotAcceptable, ResponseError{Message: strError})
+			case "user-not-found":
+				p.Context.JSON(http.StatusNotFound, ResponseError{Message: strError})
 			default:
 				p.Context.JSON(http.StatusInternalServerError, ResponseError{Message: strError})
 

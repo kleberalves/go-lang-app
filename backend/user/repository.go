@@ -9,6 +9,7 @@ type Repository interface {
 	FindAll() (res []schema.UserRead, err error)
 	Create(user schema.User) (schema.User, error)
 	Get(id int) (schema.UserRead, error)
+	GetByEmail(email string) (schema.User, error)
 	Update(user schema.User) error
 	Delete(id []int) error
 }

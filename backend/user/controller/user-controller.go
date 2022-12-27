@@ -23,6 +23,9 @@ func NewUserController(router *gin.Engine, service user.Service) {
 	router.GET("/users/:id", ctrl.Get)
 	router.PUT("/users", ctrl.Update)
 	router.DELETE("/users", ctrl.Delete)
+
+	router.POST("/users/login", ctrl.Create)
+
 }
 
 func (ctrl *controller) FindAll(c *gin.Context) {

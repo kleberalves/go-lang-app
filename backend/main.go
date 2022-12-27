@@ -24,6 +24,9 @@ import (
 	_profileController "github.com/kleberalves/problemCompanyApp/backend/profile/controller"
 	_profileRepo "github.com/kleberalves/problemCompanyApp/backend/profile/repository"
 	_profileService "github.com/kleberalves/problemCompanyApp/backend/profile/service"
+
+	_credentialController "github.com/kleberalves/problemCompanyApp/backend/credential/controller"
+	_credentialService "github.com/kleberalves/problemCompanyApp/backend/credential/service"
 )
 
 func main() {
@@ -47,6 +50,11 @@ func main() {
 	profileRepo := _profileRepo.NewProfileRepository(db)
 	profileService := _profileService.NewProfileService(profileRepo)
 	_profileController.NewProfileController(router, profileService)
+
+	// Credential does not need self-repo because the password has been stored on the User.
+	// Also needs to check for User existence by Email
+	credentialService := _credentialService.NewCredentialService(userRepo)
+	_credentialController.NewCredentialController(router, credentialService)
 
 	hostPort := os.Getenv("HOST_PORT")
 	if hostPort == "" {
