@@ -19,12 +19,12 @@ func NewUserService(repo user.Repository) user.Service {
 	}
 }
 
-func (srv *userService) AddProfile(userId int, typo int) schema.Profile {
+func (srv *userService) AddProfile(userId int, typo int) (schema.Profile, error) {
 	return srv.userRepo.AddProfile(userId, enums.TypeUser(typo))
 
 }
-func (srv *userService) DeleteProfile(userId int, typo int) {
-	srv.userRepo.DeleteProfile(userId, enums.TypeUser(typo))
+func (srv *userService) DeleteProfile(userId int, typo int) error {
+	return srv.userRepo.DeleteProfile(userId, enums.TypeUser(typo))
 }
 
 func (srv *userService) FindAll() (res []schema.UserRead, err error) {

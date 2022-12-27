@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
+	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
 	"github.com/kleberalves/problemCompanyApp/backend/user"
 )
 
@@ -43,9 +44,12 @@ func (ctrl *userController) AssociateProfile(c *gin.Context) {
 		panic("Failed to convert TYPO parameter: " + err2.Error())
 	}
 
-	profile := ctrl.userService.AddProfile(id, typo)
+	item, err := ctrl.userService.AddProfile(id, typo)
 
-	c.JSON(http.StatusOK, profile)
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err,
+		Obj:     item})
 }
 
 func (ctrl *userController) RemoveProfile(c *gin.Context) {
@@ -67,19 +71,20 @@ func (ctrl *userController) RemoveProfile(c *gin.Context) {
 
 	ctrl.userService.DeleteProfile(id, typo)
 
-	c.Writer.WriteHeader(http.StatusNoContent)
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err})
 }
 
 func (ctrl *userController) FindAll(c *gin.Context) {
 
-	var users []schema.UserRead
-	users, err := ctrl.userService.FindAll()
+	var items []schema.UserRead
+	items, err := ctrl.userService.FindAll()
 
-	if err != nil {
-		panic("Failed to retrieve all Users: " + err.Error())
-	}
-
-	c.JSON(http.StatusOK, users)
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err,
+		Obj:     items})
 }
 
 func (ctrl *userController) Create(c *gin.Context) {
@@ -90,13 +95,12 @@ func (ctrl *userController) Create(c *gin.Context) {
 		return
 	}
 
-	user, err := ctrl.userService.Create(input)
+	item, err := ctrl.userService.Create(input)
 
-	if err != nil {
-		panic("Failed to create User: " + err.Error())
-	}
-
-	c.JSON(http.StatusOK, user)
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err,
+		Obj:     item})
 }
 
 func (ctrl *userController) Get(c *gin.Context) {
@@ -108,14 +112,12 @@ func (ctrl *userController) Get(c *gin.Context) {
 		panic("Failed to convert ID parameter: " + err.Error())
 	}
 
-	user, err := ctrl.userService.Get(id)
+	item, err := ctrl.userService.Get(id)
 
-	if err != nil {
-		panic("Failed to get User: " + err.Error())
-	}
-
-	c.JSON(http.StatusOK, user)
-
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err,
+		Obj:     item})
 }
 
 func (ctrl *userController) Update(c *gin.Context) {
@@ -127,12 +129,9 @@ func (ctrl *userController) Update(c *gin.Context) {
 	}
 
 	err := ctrl.userService.Update(input)
-
-	if err != nil {
-		panic("Failed to update User: " + err.Error())
-	}
-
-	c.Writer.WriteHeader(http.StatusNoContent)
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err})
 
 }
 
@@ -150,5 +149,7 @@ func (ctrl *userController) Delete(c *gin.Context) {
 		panic("Failed to delete Users: " + err.Error())
 	}
 
-	c.Writer.WriteHeader(http.StatusNoContent)
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err})
 }

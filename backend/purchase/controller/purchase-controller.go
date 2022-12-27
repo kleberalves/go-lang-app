@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kleberalves/problemCompanyApp/backend/purchase"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
+	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
 )
 
 type purchaseController struct {
@@ -23,14 +24,17 @@ func NewPurchaseController(router *gin.Engine, service purchase.Service) {
 
 func (ctrl *purchaseController) FindAll(c *gin.Context) {
 
-	var purchases []schema.Purchase
-	purchases, err := ctrl.purchaseService.FindAll()
+	var items []schema.Purchase
+	items, err := ctrl.purchaseService.FindAll()
 
 	if err != nil {
 		panic("Failed to retrieve all purchases: " + err.Error())
 	}
 
-	c.JSON(http.StatusOK, purchases)
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err,
+		Obj:     items})
 }
 
 func (ctrl *purchaseController) Create(c *gin.Context) {
@@ -41,11 +45,14 @@ func (ctrl *purchaseController) Create(c *gin.Context) {
 		return
 	}
 
-	purchase, err := ctrl.purchaseService.Create(input)
+	item, err := ctrl.purchaseService.Create(input)
 
 	if err != nil {
 		panic("Failed to create User: " + err.Error())
 	}
 
-	c.JSON(http.StatusOK, purchase)
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err,
+		Obj:     item})
 }

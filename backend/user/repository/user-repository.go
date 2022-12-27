@@ -15,7 +15,7 @@ func NewUserRepository(Conn *gorm.DB) user.Repository {
 	return &userRepository{Conn}
 }
 
-func (repo *userRepository) AddProfile(userId int, typ enums.TypeUser) schema.Profile {
+func (repo *userRepository) AddProfile(userId int, typ enums.TypeUser) (schema.Profile, error) {
 
 	profile := schema.Profile{
 		UserID: userId,
@@ -24,14 +24,10 @@ func (repo *userRepository) AddProfile(userId int, typ enums.TypeUser) schema.Pr
 
 	err := repo.Conn.Create(&profile).Error
 
-	if err != nil {
-		panic("Failed to associate profile to user: " + err.Error())
-	}
-
-	return profile
+	return profile, err
 
 }
-func (repo *userRepository) DeleteProfile(userId int, typ enums.TypeUser) {
+func (repo *userRepository) DeleteProfile(userId int, typ enums.TypeUser) error {
 	profileWhere := schema.Profile{
 		UserID: userId,
 		Type:   typ.EnumIndex(),
@@ -39,10 +35,7 @@ func (repo *userRepository) DeleteProfile(userId int, typ enums.TypeUser) {
 
 	//Unscoped() deletes permanently
 	err := repo.Conn.Unscoped().Delete(&schema.Profile{}, repo.Conn.Where(profileWhere)).Error
-
-	if err != nil {
-		panic("Failed to remove profile to user: " + err.Error())
-	}
+	return err
 
 }
 

@@ -13,8 +13,8 @@ type Repository interface {
 	Update(user schema.User) error
 	Delete(id []int) error
 
-	AddProfile(userId int, typ enums.TypeUser) schema.Profile
-	DeleteProfile(userId int, typ enums.TypeUser)
+	AddProfile(userId int, typ enums.TypeUser) (schema.Profile, error)
+	DeleteProfile(userId int, typ enums.TypeUser) error
 	// GetByID(ctx context.Context, id int64) (*models.Article, error)
 	// GetByTitle(ctx context.Context, title string) (*models.Article, error)
 	// Update(ctx context.Context, ar *models.Article) error

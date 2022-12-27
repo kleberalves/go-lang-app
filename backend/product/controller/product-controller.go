@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kleberalves/problemCompanyApp/backend/product"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
+	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
 )
 
 type productController struct {
@@ -22,14 +23,17 @@ func NewProductController(router *gin.Engine, service product.Service) {
 
 func (ctrl *productController) FindAll(c *gin.Context) {
 
-	var products []schema.Product
-	products, err := ctrl.productService.FindAll()
+	var items []schema.Product
+	items, err := ctrl.productService.FindAll()
 
 	if err != nil {
 		panic("Failed to retrieve all products: " + err.Error())
 	}
 
-	c.JSON(http.StatusOK, products)
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err,
+		Obj:     items})
 }
 
 func (ctrl *productController) Create(c *gin.Context) {
@@ -40,11 +44,10 @@ func (ctrl *productController) Create(c *gin.Context) {
 		return
 	}
 
-	product, err := ctrl.productService.Create(input)
+	item, err := ctrl.productService.Create(input)
 
-	if err != nil {
-		panic("Failed to create Product: " + err.Error())
-	}
-
-	c.JSON(http.StatusOK, product)
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err,
+		Obj:     item})
 }
