@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	_dataSource "github.com/kleberalves/problemCompanyApp/backend/datasources"
 
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
@@ -30,6 +31,12 @@ import (
 )
 
 func main() {
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic("error loading .env file")
+	}
+
 	router := gin.Default()
 
 	db := _dataSource.NewPostGresDataSource().Connect()
@@ -57,9 +64,9 @@ func main() {
 	_credentialController.NewCredentialController(router, credentialService)
 
 	hostPort := os.Getenv("HOST_PORT")
-	if hostPort == "" {
-		hostPort = "8080"
-	}
+	// if hostPort == "" {
+	// 	hostPort = "8080"
+	// }
 
 	fmt.Println("Application port: " + hostPort)
 	router.Run("localhost:" + hostPort)

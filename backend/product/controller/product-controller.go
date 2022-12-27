@@ -7,6 +7,7 @@ import (
 	"github.com/kleberalves/problemCompanyApp/backend/product"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
+	"github.com/kleberalves/problemCompanyApp/backend/services/security"
 )
 
 type controller struct {
@@ -17,10 +18,14 @@ func NewProductController(router *gin.Engine, service product.Service) {
 	ctrl := &controller{
 		service: service,
 	}
-	router.GET("/products", ctrl.FindAll)
-	router.POST("/products", ctrl.Create)
-	router.PUT("/products", ctrl.Update)
-	router.DELETE("/products", ctrl.Delete)
+
+	protected := router.Group("/products")
+	protected.Use(security.JwtAuthMiddleware())
+
+	protected.GET("/", ctrl.FindAll)
+	protected.POST("/", ctrl.Create)
+	protected.PUT("/", ctrl.Update)
+	protected.DELETE("/", ctrl.Delete)
 }
 
 func (ctrl *controller) FindAll(c *gin.Context) {

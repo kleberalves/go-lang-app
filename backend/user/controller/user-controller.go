@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
+	"github.com/kleberalves/problemCompanyApp/backend/services/security"
 	"github.com/kleberalves/problemCompanyApp/backend/user"
 )
 
@@ -18,13 +19,14 @@ func NewUserController(router *gin.Engine, service user.Service) {
 	ctrl := &controller{
 		service: service,
 	}
-	router.GET("/users", ctrl.FindAll)
-	router.POST("/users", ctrl.Create)
-	router.GET("/users/:id", ctrl.Get)
-	router.PUT("/users", ctrl.Update)
-	router.DELETE("/users", ctrl.Delete)
 
-	router.POST("/users/login", ctrl.Create)
+	protected := router.Group("/users")
+	protected.Use(security.JwtAuthMiddleware())
+	protected.GET("/", ctrl.FindAll)
+	protected.POST("/", ctrl.Create)
+	protected.GET("/:id", ctrl.Get)
+	protected.PUT("/", ctrl.Update)
+	protected.DELETE("/", ctrl.Delete)
 
 }
 

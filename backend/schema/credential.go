@@ -4,4 +4,5 @@ type Credential struct {
 	FirstName string
 	Email     string
 	JwToken   string
+	Profiles  []Profile
 }

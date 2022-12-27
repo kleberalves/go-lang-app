@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kleberalves/problemCompanyApp/backend/profile"
 	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
+	"github.com/kleberalves/problemCompanyApp/backend/services/security"
 )
 
 type controller struct {
@@ -17,9 +18,13 @@ func NewProfileController(router *gin.Engine, service profile.Service) {
 	ctrl := &controller{
 		service: service,
 	}
-	router.GET("/profiles", ctrl.FindAll)
-	router.POST("/profiles/:typoid/user/:id", ctrl.AddProfile)
-	router.DELETE("/profiles/:typoid", ctrl.RemoveProfiles)
+
+	protected := router.Group("/profiles")
+	protected.Use(security.JwtAuthMiddleware())
+
+	protected.GET("/", ctrl.FindAll)
+	protected.POST("/:typoid/user/:id", ctrl.AddProfile)
+	protected.DELETE("/:typoid", ctrl.RemoveProfiles)
 }
 
 func (ctrl *controller) FindAll(c *gin.Context) {

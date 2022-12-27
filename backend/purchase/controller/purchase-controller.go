@@ -8,6 +8,7 @@ import (
 	"github.com/kleberalves/problemCompanyApp/backend/purchase"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
+	"github.com/kleberalves/problemCompanyApp/backend/services/security"
 )
 
 type controller struct {
@@ -18,10 +19,14 @@ func NewPurchaseController(router *gin.Engine, service purchase.Service) {
 	ctrl := &controller{
 		service: service,
 	}
-	router.GET("/purchases", ctrl.FindAll)
-	router.GET("/purchases/:userid", ctrl.GetByUser)
-	router.POST("/purchases", ctrl.Create)
-	router.DELETE("/purchases", ctrl.Delete)
+
+	protected := router.Group("/purchases")
+	protected.Use(security.JwtAuthMiddleware())
+
+	protected.GET("/", ctrl.FindAll)
+	protected.GET("/:userid", ctrl.GetByUser)
+	protected.POST("/", ctrl.Create)
+	protected.DELETE("/", ctrl.Delete)
 
 }
 

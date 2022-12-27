@@ -27,13 +27,17 @@ func (srv *service) Login(user schema.UserCredential) (schema.Credential, error)
 	} else {
 		if security.CheckPasswordHash(user.Password, dbUser.Password) {
 
-			credential := schema.Credential{
-				FirstName: dbUser.FirstName,
-				Email:     dbUser.Email,
-				JwToken:   "hash",
-			}
+			token, err := security.GenerateToken(dbUser.ID)
 
-			return credential, err
+			if err == nil {
+				credential := schema.Credential{
+					FirstName: dbUser.FirstName,
+					Email:     dbUser.Email,
+					Profiles:  dbUser.Profiles,
+					JwToken:   token,
+				}
+				return credential, err
+			}
 		} else {
 			err = errors.New("invalid-password")
 		}
