@@ -6,29 +6,60 @@ import (
 	"gorm.io/gorm"
 )
 
-type purchaseRepository struct {
+type repository struct {
 	Conn *gorm.DB
 }
 
 func NewPurchaseRepository(Conn *gorm.DB) purchase.Repository {
-	return &purchaseRepository{Conn}
+	return &repository{Conn}
 }
 
-func (repo *purchaseRepository) FindAll() (res []schema.Purchase, err error) {
+func (repo *repository) FindAll() (res []schema.Purchase, err error) {
 
 	var purchases []schema.Purchase
-	errExec := repo.Conn.Model(&schema.Purchase{}).Find(&purchases).Error
-
-	if errExec != nil {
-		panic("Failed to retrieve all Purchases: " + err.Error())
-	}
+	errExec := repo.Conn.Model(&schema.Purchase{}).
+		Preload("Customer", func(tx *gorm.DB) *gorm.DB {
+			return tx.Omit("Password")
+		}).
+		Preload("Salesman", func(tx *gorm.DB) *gorm.DB {
+			return tx.Omit("Password")
+		}).
+		Preload("Product", &schema.Product{}).
+		Order("purchased_at desc").
+		Find(&purchases).Error
 
 	return purchases, errExec
 }
 
-func (repo *purchaseRepository) Create(input schema.Purchase) (schema.Purchase, error) {
+func (repo *repository) GetByUser(userId int) ([]schema.Purchase, error) {
+	var purchases []schema.Purchase
+	errExec := repo.Conn.Model(&schema.Purchase{}).
+		Preload("Salesman", func(tx *gorm.DB) *gorm.DB {
+			return tx.Omit("Password")
+		}).
+		Preload("Product", &schema.Product{}).
+		Where("cod_customer = ? ", userId).
+		Order("purchased_at desc").
+		Find(&purchases).Error
+	return purchases, errExec
+}
 
-	err := repo.Conn.Create(&input).Error
+func (repo *repository) Create(input schema.Purchase) (schema.Purchase, error) {
+
+	err := repo.Conn.Create(&input).
+		Preload("Customer", &schema.UserRead{}).
+		Preload("Salesman", &schema.UserRead{}).
+		Preload("Product", &schema.Product{}).
+		Error
 
 	return input, err
+}
+
+func (repo *repository) Delete(purchaseIds []int) error {
+	// Unscoped() deletes permanently
+	err := repo.Conn.Unscoped().
+		Delete(&schema.Purchase{},
+			repo.Conn.Where(purchaseIds)).
+		Error
+	return err
 }

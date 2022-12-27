@@ -9,22 +9,24 @@ import (
 	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
 )
 
-type productController struct {
-	productService product.Service
+type controller struct {
+	service product.Service
 }
 
 func NewProductController(router *gin.Engine, service product.Service) {
-	ctrl := &productController{
-		productService: service,
+	ctrl := &controller{
+		service: service,
 	}
 	router.GET("/products", ctrl.FindAll)
 	router.POST("/products", ctrl.Create)
+	router.PUT("/products", ctrl.Update)
+	router.DELETE("/products", ctrl.Delete)
 }
 
-func (ctrl *productController) FindAll(c *gin.Context) {
+func (ctrl *controller) FindAll(c *gin.Context) {
 
 	var items []schema.Product
-	items, err := ctrl.productService.FindAll()
+	items, err := ctrl.service.FindAll()
 
 	if err != nil {
 		panic("Failed to retrieve all products: " + err.Error())
@@ -36,7 +38,7 @@ func (ctrl *productController) FindAll(c *gin.Context) {
 		Obj:     items})
 }
 
-func (ctrl *productController) Create(c *gin.Context) {
+func (ctrl *controller) Create(c *gin.Context) {
 	// Validate input
 	var input schema.Product
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -44,10 +46,40 @@ func (ctrl *productController) Create(c *gin.Context) {
 		return
 	}
 
-	item, err := ctrl.productService.Create(input)
+	item, err := ctrl.service.Create(input)
 
 	httphandler.Response(httphandler.RParams{
 		Context: c,
 		Err:     err,
 		Obj:     item})
+}
+
+func (ctrl *controller) Update(c *gin.Context) {
+	// Validate input
+	var input schema.Product
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := ctrl.service.Update(input)
+
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err})
+}
+
+func (ctrl *controller) Delete(c *gin.Context) {
+	// Validate input
+	var itemIds []int
+	if err := c.ShouldBindJSON(&itemIds); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := ctrl.service.Delete(itemIds)
+
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err})
 }

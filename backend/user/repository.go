@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/kleberalves/problemCompanyApp/backend/enums"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 )
 
@@ -12,12 +11,4 @@ type Repository interface {
 	Get(id int) (schema.UserRead, error)
 	Update(user schema.User) error
 	Delete(id []int) error
-
-	AddProfile(userId int, typ enums.TypeUser) (schema.Profile, error)
-	DeleteProfile(userId int, typ enums.TypeUser) error
-	// GetByID(ctx context.Context, id int64) (*models.Article, error)
-	// GetByTitle(ctx context.Context, title string) (*models.Article, error)
-	// Update(ctx context.Context, ar *models.Article) error
-	// Store(ctx context.Context, a *models.Article) error
-	// Delete(ctx context.Context, id int64) error
 }

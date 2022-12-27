@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
 	_dataSource "github.com/kleberalves/problemCompanyApp/backend/datasources"
 
@@ -17,6 +19,10 @@ import (
 	_purchaseController "github.com/kleberalves/problemCompanyApp/backend/purchase/controller"
 	_purchaseRepo "github.com/kleberalves/problemCompanyApp/backend/purchase/repository"
 	_purchaseService "github.com/kleberalves/problemCompanyApp/backend/purchase/service"
+
+	_profileController "github.com/kleberalves/problemCompanyApp/backend/profile/controller"
+	_profileRepo "github.com/kleberalves/problemCompanyApp/backend/profile/repository"
+	_profileService "github.com/kleberalves/problemCompanyApp/backend/profile/service"
 )
 
 func main() {
@@ -37,6 +43,15 @@ func main() {
 	purchaseService := _purchaseService.NewPurchaseService(purchaseRepo)
 	_purchaseController.NewPurchaseController(router, purchaseService)
 
-	router.Run("localhost:8080")
+	profileRepo := _profileRepo.NewProfileRepository(db)
+	profileService := _profileService.NewProfileService(profileRepo)
+	_profileController.NewProfileController(router, profileService)
+
+	hostPort := os.Getenv("HOST_PORT")
+	if hostPort == "" {
+		hostPort = "8080"
+	}
+
+	router.Run("localhost:" + hostPort)
 
 }

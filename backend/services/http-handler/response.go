@@ -40,6 +40,10 @@ func Response(p RParams) {
 			case "23505":
 				//Duplicate. Constraint conflict.
 				p.Context.Writer.WriteHeader(http.StatusConflict)
+			case "23503":
+				//Duplicate. Constraint conflict.
+				p.Context.JSON(http.StatusNotAcceptable, ResponseError{Message: p.Err.Error()})
+
 			default:
 				//Generic database error
 				p.Context.JSON(http.StatusExpectationFailed, ResponseError{Message: p.Err.Error()})

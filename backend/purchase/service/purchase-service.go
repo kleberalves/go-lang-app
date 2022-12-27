@@ -1,24 +1,36 @@
 package service
 
 import (
+	"time"
+
 	"github.com/kleberalves/problemCompanyApp/backend/purchase"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 )
 
-type purchaseService struct {
-	purchaseRepo purchase.Repository
+type service struct {
+	repo purchase.Repository
 }
 
 func NewPurchaseService(repo purchase.Repository) purchase.Service {
-	return &purchaseService{
-		purchaseRepo: repo,
+	return &service{
+		repo: repo,
 	}
 }
 
-func (srv *purchaseService) FindAll() (res []schema.Purchase, err error) {
-	return srv.purchaseRepo.FindAll()
+func (srv *service) FindAll() (res []schema.Purchase, err error) {
+	return srv.repo.FindAll()
 }
 
-func (srv *purchaseService) Create(input schema.Purchase) (schema.Purchase, error) {
-	return srv.purchaseRepo.Create(input)
+func (srv *service) GetByUser(userId int) ([]schema.Purchase, error) {
+	//TODO: Check if authenticated user is owner or have a Salesman role
+	return srv.repo.GetByUser(userId)
+}
+
+func (srv *service) Create(input schema.Purchase) (schema.Purchase, error) {
+	input.PurchasedAt = time.Now()
+	return srv.repo.Create(input)
+}
+
+func (srv *service) Delete(purchaseIds []int) error {
+	return srv.repo.Delete(purchaseIds)
 }

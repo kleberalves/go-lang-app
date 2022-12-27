@@ -10,7 +10,4 @@ type Service interface {
 	Get(id int) (schema.UserRead, error)
 	Update(user schema.User) error
 	Delete(id []int) error
-
-	AddProfile(userId int, typo int) (schema.Profile, error)
-	DeleteProfile(userId int, typo int) error
 }

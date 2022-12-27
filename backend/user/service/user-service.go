@@ -3,35 +3,26 @@ package service
 import (
 	"errors"
 
-	"github.com/kleberalves/problemCompanyApp/backend/enums"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 	"github.com/kleberalves/problemCompanyApp/backend/services"
 	"github.com/kleberalves/problemCompanyApp/backend/user"
 )
 
-type userService struct {
-	userRepo user.Repository
+type service struct {
+	repo user.Repository
 }
 
 func NewUserService(repo user.Repository) user.Service {
-	return &userService{
-		userRepo: repo,
+	return &service{
+		repo: repo,
 	}
 }
 
-func (srv *userService) AddProfile(userId int, typo int) (schema.Profile, error) {
-	return srv.userRepo.AddProfile(userId, enums.TypeUser(typo))
-
-}
-func (srv *userService) DeleteProfile(userId int, typo int) error {
-	return srv.userRepo.DeleteProfile(userId, enums.TypeUser(typo))
+func (srv *service) FindAll() (res []schema.UserRead, err error) {
+	return srv.repo.FindAll()
 }
 
-func (srv *userService) FindAll() (res []schema.UserRead, err error) {
-	return srv.userRepo.FindAll()
-}
-
-func (srv *userService) Create(input schema.User) (schema.User, error) {
+func (srv *service) Create(input schema.User) (schema.User, error) {
 
 	hash, _ := services.HashPassword(input.Password)
 
@@ -42,14 +33,14 @@ func (srv *userService) Create(input schema.User) (schema.User, error) {
 		Password:  hash,
 		Profiles:  input.Profiles}
 
-	return srv.userRepo.Create(user)
+	return srv.repo.Create(user)
 }
 
-func (srv *userService) Get(id int) (schema.UserRead, error) {
-	return srv.userRepo.Get(id)
+func (srv *service) Get(id int) (schema.UserRead, error) {
+	return srv.repo.Get(id)
 }
 
-func (srv *userService) Update(input schema.User) error {
+func (srv *service) Update(input schema.User) error {
 
 	if input.ID <= 0 {
 		return errors.New("ID not defined")
@@ -61,9 +52,9 @@ func (srv *userService) Update(input schema.User) error {
 		input.Password = hash
 	}
 
-	return srv.userRepo.Update(input)
+	return srv.repo.Update(input)
 }
 
-func (srv *userService) Delete(ids []int) error {
-	return srv.userRepo.Delete(ids)
+func (srv *service) Delete(ids []int) error {
+	return srv.repo.Delete(ids)
 }

@@ -6,15 +6,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type productRepository struct {
+type repository struct {
 	Conn *gorm.DB
 }
 
 func NewProductRepository(Conn *gorm.DB) product.Repository {
-	return &productRepository{Conn}
+	return &repository{Conn}
 }
 
-func (repo *productRepository) FindAll() (res []schema.Product, err error) {
+func (repo *repository) FindAll() (res []schema.Product, err error) {
 
 	var products []schema.Product
 	errExec := repo.Conn.Model(&schema.Product{}).Find(&products).Error
@@ -26,7 +26,7 @@ func (repo *productRepository) FindAll() (res []schema.Product, err error) {
 	return products, errExec
 }
 
-func (repo *productRepository) Create(input schema.Product) (schema.Product, error) {
+func (repo *repository) Create(input schema.Product) (schema.Product, error) {
 
 	err := repo.Conn.Create(&input).Error
 
@@ -35,4 +35,24 @@ func (repo *productRepository) Create(input schema.Product) (schema.Product, err
 	}
 
 	return input, err
+}
+
+func (repo *repository) Update(item schema.Product) error {
+	err := repo.Conn.Model(&schema.Product{}).
+		Where("id = ? ", item.ID).
+		Updates(&item).Error
+	return err
+}
+
+func (repo *repository) UpdateDeletedAt(item schema.Product) error {
+	err := repo.Conn.Model(&schema.Product{}).
+		Where("id = ? ", item.ID).
+		Update("deleted_at", nil).Error
+	return err
+}
+
+func (repo *repository) Delete(itemIds []int) error {
+	//hard deletes
+	err := repo.Conn.Unscoped().Delete(&schema.Product{}, itemIds).Error
+	return err
 }

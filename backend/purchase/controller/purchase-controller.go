@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kleberalves/problemCompanyApp/backend/purchase"
@@ -9,27 +10,25 @@ import (
 	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
 )
 
-type purchaseController struct {
-	purchaseService purchase.Service
+type controller struct {
+	service purchase.Service
 }
 
 func NewPurchaseController(router *gin.Engine, service purchase.Service) {
-	ctrl := &purchaseController{
-		purchaseService: service,
+	ctrl := &controller{
+		service: service,
 	}
 	router.GET("/purchases", ctrl.FindAll)
+	router.GET("/purchases/:userid", ctrl.GetByUser)
 	router.POST("/purchases", ctrl.Create)
+	router.DELETE("/purchases", ctrl.Delete)
 
 }
 
-func (ctrl *purchaseController) FindAll(c *gin.Context) {
+func (ctrl *controller) FindAll(c *gin.Context) {
 
 	var items []schema.Purchase
-	items, err := ctrl.purchaseService.FindAll()
-
-	if err != nil {
-		panic("Failed to retrieve all purchases: " + err.Error())
-	}
+	items, err := ctrl.service.FindAll()
 
 	httphandler.Response(httphandler.RParams{
 		Context: c,
@@ -37,7 +36,24 @@ func (ctrl *purchaseController) FindAll(c *gin.Context) {
 		Obj:     items})
 }
 
-func (ctrl *purchaseController) Create(c *gin.Context) {
+func (ctrl *controller) GetByUser(c *gin.Context) {
+
+	paramUserId := c.Param("userid")
+	userId, err := strconv.Atoi(paramUserId)
+
+	if err != nil {
+		panic("Failed to convert USERID parameter: " + err.Error())
+	}
+
+	items, err := ctrl.service.GetByUser(userId)
+
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err,
+		Obj:     items})
+}
+
+func (ctrl *controller) Create(c *gin.Context) {
 	// Validate input
 	var input schema.Purchase
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -45,14 +61,25 @@ func (ctrl *purchaseController) Create(c *gin.Context) {
 		return
 	}
 
-	item, err := ctrl.purchaseService.Create(input)
-
-	if err != nil {
-		panic("Failed to create User: " + err.Error())
-	}
+	item, err := ctrl.service.Create(input)
 
 	httphandler.Response(httphandler.RParams{
 		Context: c,
 		Err:     err,
 		Obj:     item})
+}
+
+func (ctrl *controller) Delete(c *gin.Context) {
+
+	var itemIds []int
+	if err := c.ShouldBindJSON(&itemIds); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := ctrl.service.Delete(itemIds)
+
+	httphandler.Response(httphandler.RParams{
+		Context: c,
+		Err:     err})
 }
