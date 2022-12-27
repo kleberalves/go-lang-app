@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -52,6 +53,7 @@ func main() {
 		hostPort = "8080"
 	}
 
+	fmt.Println("Application port: " + hostPort)
 	router.Run("localhost:" + hostPort)
 
 }

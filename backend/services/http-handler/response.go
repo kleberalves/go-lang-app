@@ -41,7 +41,7 @@ func Response(p RParams) {
 				//Duplicate. Constraint conflict.
 				p.Context.Writer.WriteHeader(http.StatusConflict)
 			case "23503":
-				//Duplicate. Constraint conflict.
+				//FK conflict.
 				p.Context.JSON(http.StatusNotAcceptable, ResponseError{Message: p.Err.Error()})
 
 			default:

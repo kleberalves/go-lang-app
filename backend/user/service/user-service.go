@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
-	"github.com/kleberalves/problemCompanyApp/backend/services"
+	"github.com/kleberalves/problemCompanyApp/backend/services/security"
 	"github.com/kleberalves/problemCompanyApp/backend/user"
 )
 
@@ -24,7 +24,7 @@ func (srv *service) FindAll() (res []schema.UserRead, err error) {
 
 func (srv *service) Create(input schema.User) (schema.User, error) {
 
-	hash, _ := services.HashPassword(input.Password)
+	hash, _ := security.HashPassword(input.Password)
 
 	user := schema.User{
 		FirstName: input.FirstName,
@@ -48,7 +48,7 @@ func (srv *service) Update(input schema.User) error {
 
 	if input.Password != "" {
 		//TODO: check password rules
-		hash, _ := services.HashPassword(input.Password)
+		hash, _ := security.HashPassword(input.Password)
 		input.Password = hash
 	}
 
