@@ -11,7 +11,6 @@ import (
 	"github.com/kleberalves/problemCompanyApp/backend/services"
 	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
 	"github.com/kleberalves/problemCompanyApp/backend/user"
-	"github.com/kleberalves/problemCompanyApp/backend/user/filter"
 )
 
 type controller struct {
@@ -40,7 +39,7 @@ func NewUserController(router *gin.Engine, service user.Service, credential cred
 
 func (ctrl *controller) FindAll(c *gin.Context) {
 
-	var input filter.UserFilter
+	var input schema.UserFilter
 	if !httphandler.GetJson(&input, c) {
 		return
 	}
@@ -58,7 +57,7 @@ func (ctrl *controller) FindSalesmanByName(c *gin.Context) {
 
 	name := c.Param("name")
 
-	filter := filter.UserFilter{
+	filter := schema.UserFilter{
 		FirstName:   name,
 		ProfileType: 1,
 	}

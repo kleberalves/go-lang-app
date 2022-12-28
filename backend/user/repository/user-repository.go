@@ -5,7 +5,6 @@ import (
 
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 	"github.com/kleberalves/problemCompanyApp/backend/user"
-	"github.com/kleberalves/problemCompanyApp/backend/user/filter"
 	"gorm.io/gorm"
 )
 
@@ -33,7 +32,7 @@ func (repo *repository) FindAll() (res []schema.UserRead, err error) {
 	return users, errExec
 }
 
-func (repo *repository) FindByFilter(filter filter.UserFilter) ([]schema.UserRead, error) {
+func (repo *repository) FindByFilter(filter schema.UserFilter) ([]schema.UserRead, error) {
 
 	var users []schema.UserRead
 	db := repo.Conn.Model(&schema.User{}).

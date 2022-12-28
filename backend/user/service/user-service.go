@@ -6,7 +6,6 @@ import (
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 	"github.com/kleberalves/problemCompanyApp/backend/services/security"
 	"github.com/kleberalves/problemCompanyApp/backend/user"
-	"github.com/kleberalves/problemCompanyApp/backend/user/filter"
 )
 
 type service struct {
@@ -19,7 +18,7 @@ func NewUserService(repo user.Repository) user.Service {
 	}
 }
 
-func (srv *service) FindByFilter(filter filter.UserFilter) ([]schema.UserRead, error) {
+func (srv *service) FindByFilter(filter schema.UserFilter) ([]schema.UserRead, error) {
 
 	if filter.FirstName != "" && len(filter.FirstName) < 3 {
 		return []schema.UserRead{}, errors.New("need-3-chars-minimum")
