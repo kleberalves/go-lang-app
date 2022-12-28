@@ -34,7 +34,7 @@ func main() {
 
 	err := godotenv.Load(".env")
 	if err != nil {
-		panic("error loading .env file")
+		fmt.Println(".env not found.")
 	}
 
 	router := gin.Default()
