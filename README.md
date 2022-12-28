@@ -6,23 +6,27 @@
 
 #### Database Connection
 
-    POSTGRES_USER=postgres
-    POSTGRES_PASSWORD=postgres
-    POSTGRES_DB=postgres
-    POSTGRES_HOSTNAME=localhost
-    POSTGRES_PORT=5432
+	POSTGRES_USER=postgres
+	POSTGRES_PASSWORD=postgres
+	POSTGRES_DB=postgres
+	POSTGRES_HOSTNAME=localhost
+	POSTGRES_PORT=5432
 
 #### Host port
 
     HOST_PORT=8080
     
-#### Creating user Sysadmin
+#### Jwt secret
+To enable JWT token
+
+	JWT_SECRET=kda8aA5s2a93jsaZadJSDNals018jd
+    
+## Creating Sysadmin user
 
 All access points are restricted by the user type (called Profiles), so to init the application, had to create a new user type called Sysadmin that can do everything. Just set these environment variables before starting the app:
 
     ADMIN_EMAIL=admin@problemcompany.org
     ADMIN_PWD=test123
-
 
 ### Postman collection
 
