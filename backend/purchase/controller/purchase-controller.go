@@ -1,32 +1,38 @@
 package controller
 
 import (
-	"net/http"
-	"strconv"
-
 	"github.com/gin-gonic/gin"
+	"github.com/kleberalves/problemCompanyApp/backend/credential"
+	"github.com/kleberalves/problemCompanyApp/backend/enums"
 	"github.com/kleberalves/problemCompanyApp/backend/purchase"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
+	"github.com/kleberalves/problemCompanyApp/backend/services"
 	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
-	"github.com/kleberalves/problemCompanyApp/backend/services/security"
 )
 
 type controller struct {
-	service purchase.Service
+	service    purchase.Service
+	credential credential.Service
 }
 
-func NewPurchaseController(router *gin.Engine, service purchase.Service) {
+func NewPurchaseController(router *gin.Engine, service purchase.Service, credential credential.Service) {
 	ctrl := &controller{
-		service: service,
+		service:    service,
+		credential: credential,
 	}
 
-	protected := router.Group("/purchases")
-	protected.Use(security.JwtAuthMiddleware())
+	onlySalesman := router.Group("/purchases")
+	onlySalesman.Use(services.JwtAuthMiddlewareRoles(credential,
+		[]enums.TypeUser{enums.Salesman}))
+	onlySalesman.GET("/", ctrl.FindAll)
+	onlySalesman.POST("/salesman", ctrl.CreateByAuthenticatedSalesman)
+	onlySalesman.DELETE("/", ctrl.Delete)
 
-	protected.GET("/", ctrl.FindAll)
-	protected.GET("/:userid", ctrl.GetByUser)
-	protected.POST("/", ctrl.Create)
-	protected.DELETE("/", ctrl.Delete)
+	onlyCustomer := router.Group("/purchases")
+	onlyCustomer.Use(services.JwtAuthMiddlewareRoles(credential,
+		[]enums.TypeUser{enums.Customer}))
+	onlyCustomer.POST("/customer", ctrl.CreateByAuthenticatedCustomer)
+	onlyCustomer.GET("/my", ctrl.GetByMyId)
 
 }
 
@@ -35,40 +41,47 @@ func (ctrl *controller) FindAll(c *gin.Context) {
 	var items []schema.Purchase
 	items, err := ctrl.service.FindAll()
 
-	httphandler.Response(httphandler.RParams{
+	httphandler.ResponseCheck(httphandler.RParams{
 		Context: c,
 		Err:     err,
 		Obj:     items})
 }
 
-func (ctrl *controller) GetByUser(c *gin.Context) {
+func (ctrl *controller) GetByMyId(c *gin.Context) {
 
-	paramUserId := c.Param("userid")
-	userId, err := strconv.Atoi(paramUserId)
+	items, err := ctrl.service.GetByMyId(c)
 
-	if err != nil {
-		panic("Failed to convert USERID parameter: " + err.Error())
-	}
-
-	items, err := ctrl.service.GetByUser(userId)
-
-	httphandler.Response(httphandler.RParams{
+	httphandler.ResponseCheck(httphandler.RParams{
 		Context: c,
 		Err:     err,
 		Obj:     items})
 }
 
-func (ctrl *controller) Create(c *gin.Context) {
+func (ctrl *controller) CreateByAuthenticatedSalesman(c *gin.Context) {
 	// Validate input
 	var input schema.Purchase
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if !httphandler.GetJson(&input, c) {
 		return
 	}
 
-	item, err := ctrl.service.Create(input)
+	item, err := ctrl.service.CreateByAuthenticatedSalesman(input, c)
 
-	httphandler.Response(httphandler.RParams{
+	httphandler.ResponseCheck(httphandler.RParams{
+		Context: c,
+		Err:     err,
+		Obj:     item})
+}
+
+func (ctrl *controller) CreateByAuthenticatedCustomer(c *gin.Context) {
+	// Validate input
+	var input schema.Purchase
+	if !httphandler.GetJson(&input, c) {
+		return
+	}
+
+	item, err := ctrl.service.CreateMyPurchase(input, c)
+
+	httphandler.ResponseCheck(httphandler.RParams{
 		Context: c,
 		Err:     err,
 		Obj:     item})
@@ -76,15 +89,14 @@ func (ctrl *controller) Create(c *gin.Context) {
 
 func (ctrl *controller) Delete(c *gin.Context) {
 
-	var itemIds []int
-	if err := c.ShouldBindJSON(&itemIds); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var input []int
+	if !httphandler.GetJson(&input, c) {
 		return
 	}
 
-	err := ctrl.service.Delete(itemIds)
+	err := ctrl.service.Delete(input)
 
-	httphandler.Response(httphandler.RParams{
+	httphandler.ResponseCheck(httphandler.RParams{
 		Context: c,
 		Err:     err})
 }

@@ -1,37 +1,39 @@
 package controller
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kleberalves/problemCompanyApp/backend/credential"
+	"github.com/kleberalves/problemCompanyApp/backend/enums"
 	"github.com/kleberalves/problemCompanyApp/backend/profile"
+	"github.com/kleberalves/problemCompanyApp/backend/services"
 	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
-	"github.com/kleberalves/problemCompanyApp/backend/services/security"
 )
 
 type controller struct {
 	service profile.Service
 }
 
-func NewProfileController(router *gin.Engine, service profile.Service) {
+func NewProfileController(router *gin.Engine, service profile.Service, credential credential.Service) {
 	ctrl := &controller{
 		service: service,
 	}
 
-	protected := router.Group("/profiles")
-	protected.Use(security.JwtAuthMiddleware())
+	onlySalesman := router.Group("/profiles")
+	onlySalesman.Use(services.JwtAuthMiddlewareRoles(credential,
+		[]enums.TypeUser{enums.Salesman}))
 
-	protected.GET("/", ctrl.FindAll)
-	protected.POST("/:typoid/user/:id", ctrl.AddProfile)
-	protected.DELETE("/:typoid", ctrl.RemoveProfiles)
+	onlySalesman.GET("/", ctrl.FindAll)
+	onlySalesman.POST("/:typoid/user/:id", ctrl.AddProfile)
+	onlySalesman.DELETE("/:typoid", ctrl.RemoveProfiles)
 }
 
 func (ctrl *controller) FindAll(c *gin.Context) {
 
 	items, err := ctrl.service.FindAll()
 
-	httphandler.Response(httphandler.RParams{
+	httphandler.ResponseCheck(httphandler.RParams{
 		Context: c,
 		Err:     err,
 		Obj:     items})
@@ -55,7 +57,7 @@ func (ctrl *controller) AddProfile(c *gin.Context) {
 
 	item, err := ctrl.service.AddProfile(id, typo)
 
-	httphandler.Response(httphandler.RParams{
+	httphandler.ResponseCheck(httphandler.RParams{
 		Context: c,
 		Err:     err,
 		Obj:     item})
@@ -70,15 +72,14 @@ func (ctrl *controller) RemoveProfiles(c *gin.Context) {
 		panic("Failed to convert TYPO parameter: " + err.Error())
 	}
 
-	var userIds []int
-	if err := c.ShouldBindJSON(&userIds); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var input []int
+	if !httphandler.GetJson(&input, c) {
 		return
 	}
 
-	err = ctrl.service.RemoveProfiles(userIds, typo)
+	err = ctrl.service.RemoveProfiles(input, typo)
 
-	httphandler.Response(httphandler.RParams{
+	httphandler.ResponseCheck(httphandler.RParams{
 		Context: c,
 		Err:     err})
 }

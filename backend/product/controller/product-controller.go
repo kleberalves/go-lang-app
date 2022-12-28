@@ -1,31 +1,34 @@
 package controller
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/kleberalves/problemCompanyApp/backend/credential"
+	"github.com/kleberalves/problemCompanyApp/backend/enums"
 	"github.com/kleberalves/problemCompanyApp/backend/product"
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
+	"github.com/kleberalves/problemCompanyApp/backend/services"
 	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
-	"github.com/kleberalves/problemCompanyApp/backend/services/security"
 )
 
 type controller struct {
 	service product.Service
 }
 
-func NewProductController(router *gin.Engine, service product.Service) {
+func NewProductController(router *gin.Engine, service product.Service, credential credential.Service) {
 	ctrl := &controller{
 		service: service,
 	}
 
-	protected := router.Group("/products")
-	protected.Use(security.JwtAuthMiddleware())
+	onlySalesman := router.Group("/products")
+	onlySalesman.Use(services.JwtAuthMiddlewareRoles(credential,
+		[]enums.TypeUser{enums.Salesman}))
+	onlySalesman.POST("/", ctrl.Create)
+	onlySalesman.PUT("/", ctrl.Update)
+	onlySalesman.DELETE("/", ctrl.Delete)
 
-	protected.GET("/", ctrl.FindAll)
-	protected.POST("/", ctrl.Create)
-	protected.PUT("/", ctrl.Update)
-	protected.DELETE("/", ctrl.Delete)
+	justValidToken := router.Group("/products")
+	justValidToken.Use(services.JwtAuthMiddleware())
+	justValidToken.GET("/", ctrl.FindAll)
 }
 
 func (ctrl *controller) FindAll(c *gin.Context) {
@@ -37,54 +40,49 @@ func (ctrl *controller) FindAll(c *gin.Context) {
 		panic("Failed to retrieve all products: " + err.Error())
 	}
 
-	httphandler.Response(httphandler.RParams{
+	httphandler.ResponseCheck(httphandler.RParams{
 		Context: c,
 		Err:     err,
 		Obj:     items})
 }
 
 func (ctrl *controller) Create(c *gin.Context) {
-	// Validate input
+
 	var input schema.Product
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if !httphandler.GetJson(&input, c) {
 		return
 	}
 
 	item, err := ctrl.service.Create(input)
 
-	httphandler.Response(httphandler.RParams{
+	httphandler.ResponseCheck(httphandler.RParams{
 		Context: c,
 		Err:     err,
 		Obj:     item})
 }
 
 func (ctrl *controller) Update(c *gin.Context) {
-	// Validate input
 	var input schema.Product
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if !httphandler.GetJson(&input, c) {
 		return
 	}
 
 	err := ctrl.service.Update(input)
 
-	httphandler.Response(httphandler.RParams{
+	httphandler.ResponseCheck(httphandler.RParams{
 		Context: c,
 		Err:     err})
 }
 
 func (ctrl *controller) Delete(c *gin.Context) {
-	// Validate input
-	var itemIds []int
-	if err := c.ShouldBindJSON(&itemIds); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var input []int
+	if !httphandler.GetJson(&input, c) {
 		return
 	}
 
-	err := ctrl.service.Delete(itemIds)
+	err := ctrl.service.Delete(input)
 
-	httphandler.Response(httphandler.RParams{
+	httphandler.ResponseCheck(httphandler.RParams{
 		Context: c,
 		Err:     err})
 }
