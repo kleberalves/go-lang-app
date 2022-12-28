@@ -65,9 +65,6 @@ func main() {
 	_profileController.NewProfileController(router, profileService, credentialService)
 
 	hostPort := os.Getenv("HOST_PORT")
-	// if hostPort == "" {
-	// 	hostPort = "8080"
-	// }
 
 	fmt.Println("Application port: " + hostPort)
 	router.Run("localhost:" + hostPort)
