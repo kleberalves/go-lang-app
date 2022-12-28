@@ -1,8 +1,11 @@
 package repository
 
 import (
+	"strings"
+
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 	"github.com/kleberalves/problemCompanyApp/backend/user"
+	"github.com/kleberalves/problemCompanyApp/backend/user/filter"
 	"gorm.io/gorm"
 )
 
@@ -28,6 +31,29 @@ func (repo *repository) FindAll() (res []schema.UserRead, err error) {
 	}
 
 	return users, errExec
+}
+
+func (repo *repository) FindByFilter(filter filter.UserFilter) ([]schema.UserRead, error) {
+
+	var users []schema.UserRead
+	db := repo.Conn.Model(&schema.User{}).
+		Preload("Profiles")
+
+	if filter.ProfileType > 0 {
+		db = db.Joins("inner join profiles on profiles.user_id = users.id and profiles.type = ?", filter.ProfileType)
+	}
+
+	if filter.FirstName != "" {
+		db = db.Where("LOWER(first_name) LIKE ?", "%"+strings.ToLower(filter.FirstName)+"%")
+	}
+
+	err := db.Find(&users).Error
+
+	if err != nil {
+		panic("Failed to retrieve all Users: " + err.Error())
+	}
+
+	return users, err
 }
 
 func (repo *repository) Create(input schema.User) (schema.User, error) {
