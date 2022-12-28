@@ -46,10 +46,15 @@ func (repo *repository) GetByUser(userId int) ([]schema.Purchase, error) {
 
 func (repo *repository) Create(input schema.Purchase) (schema.Purchase, error) {
 
-	err := repo.Conn.Create(&input).
-		Preload("Customer", &schema.UserRead{}).
-		Preload("Salesman", &schema.UserRead{}).
+	err := repo.Conn.
+		Preload("Customer", func(tx *gorm.DB) *gorm.DB {
+			return tx.Omit("Password")
+		}).
+		Preload("Salesman", func(tx *gorm.DB) *gorm.DB {
+			return tx.Omit("Password")
+		}).
 		Preload("Product", &schema.Product{}).
+		Create(&input).
 		Error
 
 	return input, err

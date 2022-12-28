@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"database/sql"
 	"time"
 
 	"gorm.io/gorm"
@@ -12,8 +13,8 @@ type Purchase struct {
 	CodCustomer int
 	Customer    User `gorm:"foreignKey:CodCustomer;not null"`
 
-	CodSalesman int
-	Salesman    User `gorm:"foreignKey:CodSalesman;not null"`
+	CodSalesman sql.NullInt64
+	Salesman    *User `gorm:"foreignKey:CodSalesman;constraint:OnUpdate:CASCADE,ONDELETE:SET NULL;"`
 
 	CodProduct int
 	Product    Product `gorm:"foreignKey:CodProduct;not null" `
