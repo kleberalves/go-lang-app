@@ -43,25 +43,26 @@ func main() {
 	schema.Setup(db)
 
 	userRepo := _useRepo.NewUserRepository(db)
-	userService := _useService.NewUserService(userRepo)
-	_userController.NewUserController(router, userService)
-
-	productRepo := _productRepo.NewProductRepository(db)
-	productService := _productService.NewProductService(productRepo)
-	_productController.NewProductController(router, productService)
-
-	purchaseRepo := _purchaseRepo.NewPurchaseRepository(db)
-	purchaseService := _purchaseService.NewPurchaseService(purchaseRepo)
-	_purchaseController.NewPurchaseController(router, purchaseService)
-
-	profileRepo := _profileRepo.NewProfileRepository(db)
-	profileService := _profileService.NewProfileService(profileRepo)
-	_profileController.NewProfileController(router, profileService)
 
 	// Credential does not need self-repo because the password has been stored on the User.
 	// Also needs to check for User existence by Email
 	credentialService := _credentialService.NewCredentialService(userRepo)
 	_credentialController.NewCredentialController(router, credentialService)
+
+	userService := _useService.NewUserService(userRepo)
+	_userController.NewUserController(router, userService, credentialService)
+
+	productRepo := _productRepo.NewProductRepository(db)
+	productService := _productService.NewProductService(productRepo)
+	_productController.NewProductController(router, productService, credentialService)
+
+	purchaseRepo := _purchaseRepo.NewPurchaseRepository(db)
+	purchaseService := _purchaseService.NewPurchaseService(purchaseRepo)
+	_purchaseController.NewPurchaseController(router, purchaseService, credentialService)
+
+	profileRepo := _profileRepo.NewProfileRepository(db)
+	profileService := _profileService.NewProfileService(profileRepo)
+	_profileController.NewProfileController(router, profileService, credentialService)
 
 	hostPort := os.Getenv("HOST_PORT")
 	// if hostPort == "" {
