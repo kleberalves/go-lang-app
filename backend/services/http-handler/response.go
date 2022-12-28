@@ -18,7 +18,7 @@ type RParams struct {
 	Obj     any
 }
 
-func Response(p RParams) {
+func ResponseCheck(p RParams) {
 
 	//Means OK, no errors
 	if p.Err == nil {
