@@ -1,7 +1,7 @@
-import Head from 'next/head'
+
 import { Inter } from '@next/font/google'
 import { MasterPage } from '../components/MasterPage'
-import { AppBar, Button, Grid, Paper, Tab, Tabs, TextField, Toolbar, Typography } from '@mui/material'
+import { AppBar, Button, Grid, Paper, Tab, Tabs } from '@mui/material'
 import { TabPanel } from '../components/panels/TabPanel'
 import { useState } from 'react'
 
@@ -14,12 +14,7 @@ export default function Manager() {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setIndexTab(newValue);
   };
-  return <MasterPage>
-    <Head>
-      <title>Problem Company App Test - Manager</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <link rel="icon" href="/favicon.svg" />
-    </Head>
+  return <MasterPage pageTitle='Manager'>
 
     <Paper sx={{ maxWidth: 936, margin: 'auto', overflow: 'hidden' }}>
 
@@ -33,55 +28,44 @@ export default function Manager() {
 
 
       <TabPanel value={indexTab} index={0}>
-       
-          <Toolbar>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs>
-               
-              </Grid>
-              <Grid item>
-                <Button variant="contained" sx={{ mr: 1 }}>
-                  Add Salesman
-                </Button>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs>
 
-              </Grid>
-            </Grid>
-          </Toolbar>
-      
+          </Grid>
+          <Grid item>
+            <Button variant="contained" sx={{ mr: 1 }}>
+              Add Salesman
+            </Button>
 
-
+          </Grid>
+        </Grid>
       </TabPanel>
       <TabPanel value={indexTab} index={1}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs>
 
-          <Toolbar>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs>
-               
-              </Grid>
-              <Grid item>
-                <Button variant="contained" sx={{ mr: 1 }}>
-                  Add Product
-                </Button>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" sx={{ mr: 1 }}>
+              Add Product
+            </Button>
 
-              </Grid>
-            </Grid>
-          </Toolbar>
+          </Grid>
+        </Grid>
       </TabPanel>
       <TabPanel value={indexTab} index={2}>
-    
-          <Toolbar>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs>
-               
-              </Grid>
-              <Grid item>
-                <Button variant="contained" sx={{ mr: 1 }}>
-                  Add Customer
-                </Button>
 
-              </Grid>
-            </Grid>
-          </Toolbar>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs>
+
+          </Grid>
+          <Grid item>
+            <Button variant="contained" sx={{ mr: 1 }}>
+              Add Customer
+            </Button>
+
+          </Grid>
+        </Grid>
       </TabPanel>
     </Paper>
 

@@ -1,5 +1,4 @@
 import getConfig from 'next/config'
-import 'isomorphic-unfetch'
 
 const {
     publicRuntimeConfig: publicRuntimeConfig,

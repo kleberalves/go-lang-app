@@ -3,16 +3,16 @@ import cookie from 'js-cookie'
 import { useContext, useState } from 'react';
 import useRequestService from './request.service';
 import { validateEmail } from './util.service';
+import { MasterContext } from '../components/MasterPage';
 export interface UserCredential {
     Email: string;
     Password: string;
 };
-import { MasterPageContext } from '../components/MasterPage';
 
 const useLoginService = () => {
 
-    const { messageBox } = useContext(MasterPageContext);
     const [resquestStatus, setRequestStatus] = useState<number>(0);
+    const { messageBox } = useContext(MasterContext);
 
     const { post, get, put } = useRequestService();
 
