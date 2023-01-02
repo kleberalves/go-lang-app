@@ -25,20 +25,25 @@ func (srv *service) Login(user schema.UserCredential) (schema.Credential, error)
 
 	if dbUser.Email == "" {
 		err = errors.New("user-not-found")
+	} else if err != nil {
+		return schema.Credential{}, err
 	} else {
 		if security.CheckPasswordHash(user.Password, dbUser.Password) {
 
 			token, err := security.GenerateToken(int(dbUser.ID))
 
-			if err == nil {
-				credential := schema.Credential{
-					FirstName: dbUser.FirstName,
-					Email:     dbUser.Email,
-					Profiles:  dbUser.Profiles,
-					JwToken:   token,
-				}
-				return credential, err
+			if err != nil {
+				return schema.Credential{}, err
 			}
+
+			credential := schema.Credential{
+				FirstName: dbUser.FirstName,
+				Email:     dbUser.Email,
+				Profiles:  dbUser.Profiles,
+				JwToken:   token,
+			}
+			return credential, err
+
 		} else {
 			err = errors.New("invalid-password")
 		}
