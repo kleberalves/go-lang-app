@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_dataSource "github.com/kleberalves/problemCompanyApp/backend/datasources"
-	httphandler "github.com/kleberalves/problemCompanyApp/backend/services/http-handler"
+	"github.com/kleberalves/problemCompanyApp/backend/services"
 
 	"github.com/kleberalves/problemCompanyApp/backend/schema"
 
@@ -39,7 +39,7 @@ func main() {
 	}
 
 	router := gin.Default()
-	router.Use(httphandler.CorsMiddleware(false))
+	router.Use(services.CorsMiddleware())
 
 	db := _dataSource.NewPostGresDataSource().Connect()
 	schema.Setup(db)

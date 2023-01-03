@@ -25,9 +25,12 @@ func NewUserController(router *gin.Engine, service user.Service, credential cred
 	onlySalesman := router.Group("/users")
 	onlySalesman.Use(services.JwtAuthMiddlewareRoles(credential,
 		[]enums.TypeUser{enums.Salesman}))
-	onlySalesman.GET("/", ctrl.FindAll)
+
+	//Default browser "fetch" cannot send body objects in GET requests to search like GraphQL
+	onlySalesman.POST("/get", ctrl.FindAll)
+
 	onlySalesman.POST("/", ctrl.Create)
-	onlySalesman.GET("/:id", ctrl.Get)
+	onlySalesman.GET("/users/:id", ctrl.Get)
 	onlySalesman.PUT("/", ctrl.Update)
 	onlySalesman.DELETE("/", ctrl.Delete)
 

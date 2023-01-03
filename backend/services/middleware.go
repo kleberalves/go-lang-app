@@ -1,7 +1,9 @@
 package services
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kleberalves/problemCompanyApp/backend/credential"
@@ -30,6 +32,7 @@ func JwtAuthMiddlewareRoles(credential credential.Service, r []enums.TypeUser) g
 				return
 			}
 		}
+
 		c.Next()
 	}
 }
@@ -52,4 +55,20 @@ func finishUnauthorized(c *gin.Context) {
 func finishUnauthorizedToken(c *gin.Context) {
 	c.String(http.StatusUnauthorized, "Unauthorized token")
 	c.Abort()
+}
+
+func CorsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		//TODO: Update env variable to set production origin URL
+		c.Writer.Header().Set("Access-Control-Allow-Origin", os.Getenv("ACCESS_ORIGIN_URL"))
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+
+		if c.Request.Method == http.MethodOptions {
+
+			fmt.Println(c.GetHeader("Access-Control-Request-Method"))
+			c.Writer.WriteHeader(http.StatusOK)
+			return
+		}
+	}
 }
