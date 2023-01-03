@@ -1,17 +1,17 @@
 import '../styles/globals.css'
-import type { AppProps, AppInitialProps } from 'next/app'
+import type { AppProps } from 'next/app'
 import { checkSecurity } from '../contexts/SecureContext'
 
 const App = ({ Component, pageProps }: AppProps) => {
   return <Component {...pageProps} />
 }
 
-App.getInitialProps = async ({ Component, ctx }: any) => {
-  let props = {}
+App.getInitialProps = async ({ Component, ctx, res }: any) => {
+  let props: any = {};
 
-  if (Component.name == "LoginWrapper") {
-    //Check security at server side for first load.
-    await checkSecurity(ctx);
+  if (Component.name == "SecureContextWrapper") {
+    //Check security.
+    props["token"] = await checkSecurity(ctx);;
   }
 
   return { ...props }
