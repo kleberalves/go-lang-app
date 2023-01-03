@@ -1,54 +1,16 @@
 import * as React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
 import Navigator from './Navigator';
 import Header from './Header';
 import { Loading } from './Loading';
 import Head from 'next/head';
-import useMessageBox, { MessageBox } from '../services/message-box.service';
-import { MessageBoxComp } from './feedback/MessageBox';
+import useMessageBox from '../services/message-box.service';
+import { MessageBoxDialog } from './feedback/MessageBox';
+import { Footer } from './Footer';
+import { MasterContext } from '../contexts/MasterContext';
 
-
-function Copyright() {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://github.com/kleberalves/problemCompanyApp">
-                Problem Company App Test
-            </Link>{' '}
-            {new Date().getFullYear()}.
-        </Typography>
-    );
-}
-
-
-
-/**
- *  palette: {
-       
-    },
-    typography: {
-        h5: {
-            fontWeight: 500,
-            fontSize: 26,
-            letterSpacing: 0.5,
-        },
-    },
-    shape: {
-        borderRadius: 8,
-    },
-    components: {
-        MuiTab: {
-            defaultProps: {
-                disableRipple: true,
-            },
-        },
-    },
- */
 let theme = createTheme({
     palette: {
         mode: "dark",
@@ -71,6 +33,16 @@ let theme = createTheme({
 theme = {
     ...theme,
     components: {
+        MuiInputBase: {
+            styleOverrides: {
+                input: {
+                    '&:-webkit-autofill': {
+                        transitionDelay: '9999s',
+                        transitionProperty: 'background-color, color',
+                    }
+                }
+            },
+        },
         MuiDrawer: {
             styleOverrides: {
                 paper: {
@@ -90,28 +62,26 @@ interface MasterPageProps {
 }
 export const MasterPage: React.FunctionComponent<React.PropsWithChildren<MasterPageProps>> = ({ children, hideNavigation, pageTitle }) => {
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    const isSmUp = useMediaQuery(theme.breakpoints.up('sm'));
+    const [validPage, setValidPage] = React.useState(false);
 
-
-    //For global message 
+    //For global messages dialog.
     const { messageBox } = useMessageBox();
-    
+
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
 
-    return <MasterContext.Provider value={{
-        messageBox: messageBox
-    }}>
-        <ThemeProvider theme={theme}>
+    const BodyPage = () => {
+        return <ThemeProvider theme={theme}>
             <CssBaseline />
             <Loading />
 
             <Head>
-                <title>Problem Company App Test - {pageTitle}</title>
+                <title>{`Problem Company App Test - ${pageTitle}`}</title>
                 <meta name="description" content="Application by Kleber Alves for the Problem Company test." />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.svg" />
+                <link type="text/css" href="/nprogress.css" as="style" />
             </Head>
             <Box sx={{ display: 'flex', minHeight: '100vh' }}>
 
@@ -136,18 +106,16 @@ export const MasterPage: React.FunctionComponent<React.PropsWithChildren<MasterP
                     <Box component="main" sx={{ flex: 1, py: 6, px: 4, bgcolor: '#eaeff1' }}>
                         {children}
                     </Box>
-                    <Box component="footer" sx={{ p: 2, bgcolor: '#eaeff1' }}>
-                        <Copyright />
-                    </Box>
+                    <Footer />
                 </Box>
             </Box>
-            <MessageBoxComp messageBox={messageBox} />
+            <MessageBoxDialog messageBox={messageBox} />
         </ThemeProvider>
-    </MasterContext.Provider >
-}
+    };
 
-export interface MasterPageContextProps {
-    messageBox?: MessageBox
+    return <MasterContext.Provider value={{
+        messageBox: messageBox
+    }}>
+        {validPage ? <BodyPage /> : null}
+    </MasterContext.Provider>
 }
-
-export const MasterContext = React.createContext<MasterPageContextProps>({ messageBox: undefined })
