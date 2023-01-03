@@ -1,8 +1,9 @@
-import { Button, Grid } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { FormContainer, PasswordElement, TextFieldElement } from "react-hook-form-mui";
-import { UserCredential } from "../../services/login.service";
-import { MasterContext } from "../../components/MasterPage";
-import { useContext } from "react";
+import useLoginService, { UserCredential } from "../../services/login.service";
+
+import { useContext, useEffect } from "react";
+import { MasterContext } from "../../contexts/MasterContext";
 
 interface FormLoginProps {
     urlRedirect: string;
@@ -10,44 +11,55 @@ interface FormLoginProps {
 export const FormLogin: React.FunctionComponent<FormLoginProps> = () => {
 
     const { messageBox } = useContext(MasterContext);
+    const { login, resquestStatus } = useLoginService();
 
     const onSubmit = (data: UserCredential) => {
-        //login(data, "/manager");
-
-        messageBox?.confirm(`Deseja realmente remover?`, async () => {
-            console.log("Ok!")
-
-        });
+        login(data, "/manager");
     }
+
 
     return <FormContainer onSuccess={onSubmit}
 
         FormProps={{
             'aria-autocomplete': 'none',
-            autoComplete: 'off'
+            autoComplete: 'new-password'
         }}>
         <Grid container>
-            <Grid item xs>
+            <Box width={"100%"} >
                 <TextFieldElement
                     required
+                    style={{
+                        width: "100%"
+                    }}
                     type={'email'}
                     margin={'dense'}
                     label={'Email'}
-                    name={'email'}
-                    autoComplete="off"
+                    name={'Email'}
+                    autoComplete="new-password"
+                    inputProps={{
+                        autoComplete: "dont-fill-me",
+                    }}
                 />
-            </Grid>
-            <Grid item xs>
+            </Box>
+            <Box width={"100%"}>
                 <PasswordElement margin={'dense'}
                     label={'Password'}
                     required
-                    name={'password'}
+                    name={'Password'}
+                    autoComplete="new-password"
+                    inputProps={{
+                        autoComplete: "dont-fill-me",
+                    }}
                 />
-            </Grid>
-            <Grid item xs
+            </Box>
+            <Box width={"100%"} display="flex"
                 justifyContent="right">
-                <Button type={'submit'} color={'primary'} variant={'contained'}>Login</Button>
-            </Grid>
+                <Button type={'submit'} color={'primary'} variant={'contained'}>
+                    {resquestStatus == -1 ?
+                        <>Loading...</> :
+                        <>Login</>}
+                </Button>
+            </Box>
         </Grid>
     </FormContainer>
 }

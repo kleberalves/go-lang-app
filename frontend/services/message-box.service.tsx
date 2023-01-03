@@ -17,8 +17,8 @@ export interface MessageBox {
     element: any,
     success: (msg: string) => void,
     info: (msg: string) => void,
-    error: (msg: string) => void,
-    confirm: (msg: string, pOnConfirm: Function) => void,
+    showError: (msg: string) => void,
+    showConfirm: (msg: string, pOnConfirm: Function) => void,
     confirmOk: () => void,
     close: Function
 }
@@ -155,10 +155,10 @@ const useMessageBox = (): MessageBoxHook => {
             state: stateMessage,
             element: messageEl,
             success: success,
-            confirm: confirm,
+            showConfirm: confirm,
             confirmOk: confirmOk,
             info: info,
-            error: error,
+            showError: error,
             close: close
         }
     }

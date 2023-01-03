@@ -71,8 +71,11 @@ export const MasterPage: React.FunctionComponent<React.PropsWithChildren<MasterP
         setMobileOpen(!mobileOpen);
     };
 
-    const BodyPage = () => {
-        return <ThemeProvider theme={theme}>
+
+    return <MasterContext.Provider value={{
+        messageBox: messageBox
+    }}>
+        <ThemeProvider theme={theme}>
             <CssBaseline />
             <Loading />
 
@@ -111,11 +114,5 @@ export const MasterPage: React.FunctionComponent<React.PropsWithChildren<MasterP
             </Box>
             <MessageBoxDialog messageBox={messageBox} />
         </ThemeProvider>
-    };
-
-    return <MasterContext.Provider value={{
-        messageBox: messageBox
-    }}>
-        {validPage ? <BodyPage /> : null}
     </MasterContext.Provider>
 }

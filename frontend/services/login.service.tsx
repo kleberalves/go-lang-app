@@ -3,7 +3,8 @@ import cookie from 'js-cookie'
 import { useContext, useState } from 'react';
 import useRequestService from './request.service';
 import { validateEmail } from './util.service';
-import { MasterContext } from '../components/MasterPage';
+import { MasterContext } from '../contexts/MasterContext';
+
 export interface UserCredential {
     Email: string;
     Password: string;
@@ -19,9 +20,11 @@ const useLoginService = () => {
     const login = async (pCredential: UserCredential, pUrlRedirect: string): Promise<void> => {
 
         if (!validateEmail(pCredential.Email)) {
-            messageBox?.error("Verifique o formato do seu e-mail.");
+            messageBox?.showError("Verifique o formato do seu e-mail.");
             return;
         }
+
+        setRequestStatus(-1);
 
         const request = await post(`/credential/login`, pCredential);
 
@@ -33,25 +36,19 @@ const useLoginService = () => {
                 if (pUrlRedirect) {
                     Router.push(pUrlRedirect);
                 } else {
-                    Router.push('/products');
+                    Router.push('/manager');
                 }
             }
 
             setRequestStatus(request.status);
+        } else {
+            setRequestStatus(0);
         }
 
     }
 
-    const logout = () => {
-        cookie.remove('token');
-        window.localStorage.setItem('logout', Date.now().toString());
-        Router.push('/login');
-    }
-
-
     return {
         login,
-        logout,
         resquestStatus
     }
 }

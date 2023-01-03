@@ -6,7 +6,7 @@ type MessageBoxProps = {
     messageBox: MessageBox
 }
 
-export const MessageBoxComp: FunctionComponent<MessageBoxProps> = ({ messageBox }) => {
+export const MessageBoxDialog: FunctionComponent<MessageBoxProps> = ({ messageBox }) => {
 
     const [open, setOpen] = React.useState(false);
 
@@ -19,8 +19,6 @@ export const MessageBoxComp: FunctionComponent<MessageBoxProps> = ({ messageBox 
     };
 
     useEffect(() => {
-
-        console.log(messageBox.state);
 
         if (messageBox.state.message !== "") {
             setOpen(true);
@@ -35,8 +33,12 @@ export const MessageBoxComp: FunctionComponent<MessageBoxProps> = ({ messageBox 
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+
     >
-        <DialogContent>
+        <DialogContent sx={{
+            borderWidth: 1,
+            borderColor: "red"
+        }}>
             <DialogContentText id="alert-dialog-description">
                 <span dangerouslySetInnerHTML={{ __html: messageBox.state.message }}></span>
             </DialogContentText>
