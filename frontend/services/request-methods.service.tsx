@@ -3,8 +3,8 @@ import cookie from 'js-cookie';
 import { trackPromise } from "react-promise-tracker";
 
 //This hook can be use in server also client side.
-const  useRequestMethodsService = (error?: any, logout?: () => void) => {
-    
+const useRequestMethodsService = (showErrorDialog?: ((msg: string) => void) | undefined,
+    logout?: () => void) => {
 
     const post = async (url: string, body: any): Promise<Response | undefined> => {
 
@@ -65,33 +65,23 @@ const  useRequestMethodsService = (error?: any, logout?: () => void) => {
 
     const showError = (obj: any) => {
 
-        try {
+        if (obj && showErrorDialog) {
 
-            if (obj) {
-                if (error) {
-
-                    let msg = "";
-                    if (obj.error) {
-                        msg = obj.error.message;
-                    } else {
-                        msg = obj;
-                    }
-
-                    error(msg);
-
-                    if (obj.error && logout) {
-                        if (obj.error.statusCode == 401 || obj.error.statusCode == 403) {
-                            logout();
-                        }
-                    }
-                }
+            let msg = "";
+            if (obj.error) {
+                msg = obj.error.message;
+            } else {
+                msg = obj;
             }
 
-        }
-        catch (er) {
-            console.log("er", er);
-        }
+            showErrorDialog(msg);
 
+            if (obj.error && logout) {
+                if (obj.error.statusCode == 401 || obj.error.statusCode == 403) {
+                    logout();
+                }
+            }
+        }
     }
 
     const request = async (url: string,
@@ -107,20 +97,18 @@ const  useRequestMethodsService = (error?: any, logout?: () => void) => {
                 let token = undefined;
 
                 if (tokenCookie) {
-                    token = JSON.parse(tokenCookie).token;
+                    token = JSON.parse(tokenCookie).JwToken;
                 }
 
-                if (token) {
-                    if (url.indexOf("?") > 0) {
-                        url = `${url}&`;
-                    } else {
-                        url = `${url}?`;
-                    }
-                    url = `${url}access_token=${token}`;
-                }
                 let config: RequestInit = {
                     method: method,
                     headers: {},
+                }
+
+                if (token) {
+                    config.headers = {
+                        'Authorization': "Bearer " + token
+                    }
                 }
 
                 if (contentType !== "") {
@@ -151,7 +139,8 @@ const  useRequestMethodsService = (error?: any, logout?: () => void) => {
                     .then((object: any) => {
                         reject(object);
                     }).catch((object) => {
-                        reject(object);
+                        //TODO: Send client errors to server
+                        reject("Check your internet connection and try again.");
                     });
 
             })).then((ok) => {

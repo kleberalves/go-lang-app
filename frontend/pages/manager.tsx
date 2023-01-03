@@ -4,10 +4,11 @@ import { MasterPage } from '../components/MasterPage'
 import { AppBar, Button, Grid, Paper, Tab, Tabs } from '@mui/material'
 import { TabPanel } from '../components/panels/TabPanel'
 import { useState } from 'react'
+import { SecureContextProvider } from '../contexts/SecureContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Manager() {
+const Page = () => {
 
   const [indexTab, setIndexTab] = useState<number>(0);
 
@@ -28,11 +29,11 @@ export default function Manager() {
 
 
       <TabPanel value={indexTab} index={0}>
-        <Grid container spacing={2} alignItems="center">
+        <Grid container spacing={2}>
           <Grid item xs>
 
           </Grid>
-          <Grid item>
+          <Grid item xs>
             <Button variant="contained" sx={{ mr: 1 }}>
               Add Salesman
             </Button>
@@ -68,8 +69,7 @@ export default function Manager() {
         </Grid>
       </TabPanel>
     </Paper>
-
-
-
   </MasterPage>
 }
+
+export default SecureContextProvider(Page);
