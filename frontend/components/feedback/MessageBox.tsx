@@ -10,23 +10,20 @@ export const MessageBoxDialog: FunctionComponent<MessageBoxProps> = ({ messageBo
 
     const [open, setOpen] = React.useState(false);
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
     const handleClose = () => {
-        setOpen(false);
+        messageBox.close();
     };
 
     useEffect(() => {
 
-        if (messageBox.state.message !== "") {
+        if (messageBox.state.window !== "close" &&
+            messageBox.state.window !== "") {
             setOpen(true);
-        } else if (open) {
+        } else if (messageBox.state.window == "close") {
             setOpen(false);
         }
 
-    }, [messageBox.state.message])
+    }, [messageBox.state.window])
 
     return <Dialog
         open={open}

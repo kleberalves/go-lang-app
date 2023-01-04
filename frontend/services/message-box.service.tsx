@@ -71,10 +71,10 @@ const useMessageBox = (): MessageBoxHook => {
                 };
 
             case 'CLOSE':
+
                 return {
                     ...state,
-                    window: "close",
-                    message: ""
+                    window: "close"
                 };
 
             default: return state;
@@ -85,7 +85,7 @@ const useMessageBox = (): MessageBoxHook => {
         confirmOk: () => { },
         message: "",
         window: "",
-        type: MessageBoxTypes.Info
+        type: ""
     }
 
     const [stateMessage, dispatchMessage] = useReducer(reducerMessage, initial);
@@ -121,6 +121,7 @@ const useMessageBox = (): MessageBoxHook => {
     }
 
     const close = async () => {
+
         dispatchMessage({
             type: 'CLOSE'
         });
@@ -134,6 +135,7 @@ const useMessageBox = (): MessageBoxHook => {
     }
 
     const confirm = async (msg: string, pOnConfirm: Function) => {
+
         dispatchMessage({
             type: 'CONFIRM',
             value: msg,

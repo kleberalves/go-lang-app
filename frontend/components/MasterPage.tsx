@@ -77,14 +77,12 @@ export const MasterPage: React.FunctionComponent<React.PropsWithChildren<MasterP
     }}>
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Loading />
-
             <Head>
                 <title>{`Problem Company App Test - ${pageTitle}`}</title>
                 <meta name="description" content="Application by Kleber Alves for the Problem Company test." />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.svg" />
-                <link type="text/css" href="/nprogress.css" as="style" />
+
             </Head>
             <Box sx={{ display: 'flex', minHeight: '100vh' }}>
 

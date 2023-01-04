@@ -1,12 +1,11 @@
 
-import { Inter } from '@next/font/google'
+
 import { MasterPage } from '../components/MasterPage'
 import { AppBar, Button, Grid, Paper, Tab, Tabs } from '@mui/material'
 import { TabPanel } from '../components/panels/TabPanel'
 import { useState } from 'react'
 import { SecureContextProvider } from '../contexts/SecureContext'
-
-const inter = Inter({ subsets: ['latin'] })
+import { FormGridUsers } from '../components/forms/FormGridUsers'
 
 const Page = () => {
 
@@ -15,6 +14,7 @@ const Page = () => {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setIndexTab(newValue);
   };
+
   return <MasterPage pageTitle='Manager'>
 
     <Paper sx={{ maxWidth: 936, margin: 'auto', overflow: 'hidden' }}>
@@ -29,47 +29,24 @@ const Page = () => {
 
 
       <TabPanel value={indexTab} index={0}>
-        <Grid container spacing={2}>
-          <Grid item xs>
-
-          </Grid>
-          <Grid item xs>
-            <Button variant="contained" sx={{ mr: 1 }}>
-              Add Salesman
-            </Button>
-
-          </Grid>
-        </Grid>
+        <FormGridUsers profileType={1} label="Salesman" />
       </TabPanel>
       <TabPanel value={indexTab} index={1}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs>
-
           </Grid>
           <Grid item>
             <Button variant="contained" sx={{ mr: 1 }}>
               Add Product
             </Button>
-
           </Grid>
         </Grid>
       </TabPanel>
       <TabPanel value={indexTab} index={2}>
-
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs>
-
-          </Grid>
-          <Grid item>
-            <Button variant="contained" sx={{ mr: 1 }}>
-              Add Customer
-            </Button>
-
-          </Grid>
-        </Grid>
+        <FormGridUsers profileType={2} label="Customer" />
       </TabPanel>
     </Paper>
-  </MasterPage>
+  </MasterPage >
 }
 
 export default SecureContextProvider(Page);

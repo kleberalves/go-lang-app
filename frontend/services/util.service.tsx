@@ -31,5 +31,10 @@ export const validateEmail = (email: string) => {
     return re.test(String(email).toLowerCase());
 }
 
+export const formatDate = (date: Date): string => {
+    return new Date(date).toDateString();
+}
+
+
 
 
