@@ -11,6 +11,10 @@ import (
 	"github.com/kleberalves/problemCompanyApp/backend/services/security"
 )
 
+type ResponseError struct {
+	Message string `json:"message"`
+}
+
 func JwtAuthMiddlewareRoles(credential credential.Service, r []enums.TypeUser) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		err := security.TokenValid(c)
@@ -48,12 +52,12 @@ func JwtAuthMiddleware() gin.HandlerFunc {
 }
 
 func finishUnauthorized(c *gin.Context) {
-	c.Writer.WriteHeader(http.StatusUnauthorized)
+	c.JSON(http.StatusUnauthorized, ResponseError{Message: "Unauthorized"})
 	c.Abort()
 }
 
 func finishUnauthorizedToken(c *gin.Context) {
-	c.String(http.StatusUnauthorized, "Unauthorized token")
+	c.JSON(http.StatusUnauthorized, ResponseError{Message: "Unauthorized token"})
 	c.Abort()
 }
 
@@ -63,6 +67,7 @@ func CorsMiddleware() gin.HandlerFunc {
 		//TODO: Update env variable to set production origin URL
 		c.Writer.Header().Set("Access-Control-Allow-Origin", os.Getenv("ACCESS_ORIGIN_URL"))
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")
 
 		if c.Request.Method == http.MethodOptions {
 
