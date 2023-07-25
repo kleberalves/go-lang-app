@@ -1,4 +1,4 @@
-# Problem Company App Test
+# Go Lang App Example
 
 ## Backend setup
 
